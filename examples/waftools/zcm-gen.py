@@ -38,13 +38,14 @@ def configure(ctx):
 #                                       to avoid library naming conflicts)
 #   source:       list of zcmtype source files to be interpreted
 #   lang:         list of languages for which zcmtypes should be generated, options are:
-#                 ['c', 'cpp', 'java', 'python', 'nodejs']
+#                 ['c', 'cpp', 'java', 'python', 'nodejs']. Can also be a space separated string.
 #                 TODO: add python and nodejs support
 #   javapkg:      name of the java package
 #                 default = 'zcmtypes' (though it is encouraged to name it something more unique
 #                                       to avoid library naming conflicts)
 #
-#   TODO: add support for changing include directory
+#   TODO: add support for changing c/c++ include directory. Currently defaults so that the
+#         description below works
 #
 # Using the output zcmtypes:
 #   For the following explanations, assume:
@@ -77,7 +78,9 @@ def configure(ctx):
 #   waf zcmgen tool was invoked.
 @conf
 def zcmgen(ctx, **kw):
-    # TODO: should raise an error if ctx.env.ZCMGEN is not set
+    if not getattr(ctx.env, 'ZCMGEN', []):
+        raise WafError('zcmgen requires ctx.env.ZCMGEN set to the zcm-gen executable')
+
     uselib_name = 'zcmtypes'
     if 'name' in kw:
         uselib_name = kw['name']
@@ -90,9 +93,17 @@ def zcmgen(ctx, **kw):
         # TODO: this should probably be a more specific error type
         raise WafError('zcmgen requires keword argument: "lang"')
 
+    # exit early if no source files input
+    if not kw['source']:
+        return
+
+    lang = kw['lang']
+    if isinstance(kw['lang'], basestring):
+        lang = kw['lang'].split(' ')
+
     # Add .zcm files to build so the process_zcmtypes rule picks them up
     tg = ctx(source  = kw['source'],
-             lang    = kw['lang'],
+             lang    = lang,
              javapkg = javapkg_name)
 
     ctx.add_group()
@@ -100,7 +111,7 @@ def zcmgen(ctx, **kw):
     bld = ctx.path.get_bld().abspath()
     inc = os.path.dirname(bld)
 
-    if 'c' in kw['lang']:
+    if 'c' in lang:
         # Note: We are currently only building a static library to remove runtime linking issues,
         #       but if the user desires a shared library for any reason, adding a "ctx.shlib" rule
         #       here would be trivial, just don't forget to change the "name" as conflicting names
@@ -111,10 +122,10 @@ def zcmgen(ctx, **kw):
                   includes        = inc,
                   export_includes = inc,
                   source          = [src.change_ext('.c') for src in tg.source])
-    if 'cpp' in kw['lang']:
+    if 'cpp' in lang:
         ctx(name            = uselib_name + '_cpp',
             export_includes = inc)
-    if 'java' in kw['lang']:
+    if 'java' in lang:
         ctx(name       = uselib_name + '_java',
             features   = 'javac jar',
             use        = 'zcmjar',
