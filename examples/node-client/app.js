@@ -4,7 +4,7 @@ var http = require('http').Server(app);
 app.use(express.static("public"));
 
 var zcm = require('zcm');
-var zcmtypes = require('./zcmtypes');
+var zcmtypes = require('../build/types/zcmtypes');
 var z = zcm.create(zcmtypes, 'ipc', http);
 
 var sub1;

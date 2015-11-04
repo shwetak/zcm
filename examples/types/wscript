@@ -3,5 +3,5 @@
 def build(ctx):
     ctx.zcmgen(name    = 'examplezcmtypes',
                source  = ctx.path.ant_glob('*.zcm'),
-               lang    = ['c', 'cpp', 'java'],
+               lang    = ['c', 'cpp', 'java', 'nodejs'],
                javapkg = 'example.zcmtypes')
