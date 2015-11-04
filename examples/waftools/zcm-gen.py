@@ -166,7 +166,9 @@ class zcmgen(Task.Task):
             java_pkgpath = gen.javapkg.replace('.', '/')
             outp = '/'.join([dirparts, 'java', java_pkgpath, nameparts])
             outp_node = gen.path.find_or_declare(outp)
-            self.outputs.append(outp_node)
+            self.set_outputs(outp_node)
+        if 'nodejs' in gen.lang:
+            self.set_outputs(gen.path.find_or_declare('zcmtypes.js'))
 
         if not self.outputs:
             raise WafError('No ZCMtypes generated, ensure a valid lang is specified')
@@ -190,6 +192,8 @@ class zcmgen(Task.Task):
             langs['cpp'] = '--cpp --cpp-hpath %s --cpp-include %s' % (bld, inc)
         if 'java' in gen.lang:
             langs['java'] = '--java --jpath %s --jdefaultpkg %s' % (bld + '/java', gen.javapkg)
+        if 'nodejs' in gen.lang:
+            langs['nodejs'] = '--node --npath %s' % (bld)
 
         # no need to check if langs is empty here, already handled in runnable_status()
         return self.exec_command('%s %s %s' % (zcmgen, zcmfile, ' '.join(langs.values())))

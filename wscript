@@ -30,6 +30,7 @@ def add_zcm_configure_options(ctx):
 
     add_use_option('all',  'Attempt to enable every ZCM feature')
     add_use_option('java', 'Enable java features')
+    add_use_option('node', 'Enable js/nodejs features')
     add_use_option('zmq',  'Enable ZeroMQ features')
 
     add_trans_option('inproc', 'Enable the In-Process transport (Requires ZeroMQ)')
@@ -63,6 +64,7 @@ def process_zcm_configure_options(ctx):
 
     env.USING_CPP  = True
     env.USING_JAVA = hasopt('use_java') and attempt_use_java(ctx)
+    env.USING_NODE = hasopt('use_node') and attempt_use_node(ctx)
     env.USING_ZMQ  = hasopt('use_zmq')  and attempt_use_zmq(ctx)
 
     env.USING_TRANS_IPC    = hasopt('use_ipc')
@@ -84,6 +86,7 @@ def process_zcm_configure_options(ctx):
     Logs.pprint('BLUE', '\nDependency Configuration:')
     print_entry("C/C++",  env.USING_CPP)
     print_entry("Java",   env.USING_JAVA)
+    print_entry("NODE",   env.USING_NODE)
     print_entry("ZeroMQ", env.USING_ZMQ)
 
     Logs.pprint('BLUE', '\nTransport Configuration:')
@@ -101,6 +104,13 @@ def attempt_use_java(ctx):
 
 def attempt_use_zmq(ctx):
     ctx.check_cfg(package='libzmq', args='--cflags --libs', uselib_store='zmq')
+    return True
+
+def attempt_use_node(ctx):
+    ctx.find_program('node', var='NODE', mandatory=True)
+    ctx.env.NODE = ctx.env.NODE[0]
+    ctx.find_program('npm', var='NPM', mandatory=True)
+    ctx.env.NPM = ctx.env.NPM[0]
     return True
 
 def process_zcm_build_options(ctx):
