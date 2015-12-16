@@ -21,6 +21,12 @@ inline ZCM::ZCM()
 inline ZCM::ZCM(const std::string& transport)
 {
     zcm = zcm_create(transport.c_str());
+
+}
+
+inline ZCM::ZCM(zcm_t *zcm_)
+{
+    zcm = zcm_;
 }
 
 inline ZCM::ZCM(zcm_trans_t *zt)
@@ -83,7 +89,7 @@ inline int ZCM::handleNonblock()
 
 inline void ZCM::flush()
 {
-    zcm_flush(zcm);
+    return zcm_flush(zcm);
 }
 
 inline int ZCM::publish(const std::string& channel, const char *data, uint32_t len)
@@ -100,6 +106,27 @@ inline int ZCM::publish(const std::string& channel, const Msg *msg)
     int status = this->publish(channel, (const char*)buf, len);
     delete[] buf;
     return status;
+}
+
+inline ZCMServer::ZCMServer(const std::string& url)
+{
+    svr = zcm_server_create(url.c_str());
+}
+
+inline ZCMServer::~ZCMServer()
+{
+    zcm_server_destroy(svr);
+}
+
+inline bool ZCMServer::good() const
+{
+    return svr != NULL;
+}
+
+inline ZCM ZCMServer::accept(int timeout)
+{
+    zcm_t *z = zcm_server_accept(svr, timeout);
+    return ZCM(z);
 }
 
 // Virtual inheritance to avoid ambiguous base class problem http://stackoverflow.com/a/139329
