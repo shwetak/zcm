@@ -222,6 +222,10 @@ struct Emit : public Emitter
         }
 
         emit(1, "public:");
+        emit(2, "");
+        emit(2, "/** Default constructor **/");
+        emit(2, "inline %s() = default;", sn);
+        emit(2, "");
         emit(2, "/**");
         emit(2, " * Encode a message into binary form.");
         emit(2, " *");
@@ -267,6 +271,14 @@ struct Emit : public Emitter
         emit(2, "inline int _getEncodedSizeNoHash() const;");
         emit(2, "inline int _decodeNoHash(const void *buf, int offset, int maxlen);");
         emit(2, "inline static uint64_t _computeHash(const __zcm_hash_ptr *p);");
+        emit(2, "");
+        emit(2, "/** Default copy constructor **/");
+        emit(2, "inline %s(const %s& o) = default;", sn, sn);
+        emit(2, "");
+        emit(2, "/** Default move constructor **/");
+        emit(2, "#if (__cplusplus >= 201103L) // Check for c++11 standard");
+        emit(2, "inline %s(%s&& o) = default;", sn, sn);
+        emit(2, "#endif");
         emit(0, "};");
         emit(0, "");
     }
