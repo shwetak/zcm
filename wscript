@@ -29,10 +29,12 @@ def add_zcm_configure_options(ctx):
     gr = ctx.add_option_group('ZCM Configuration Options')
 
     def add_use_option(name, desc):
-        gr.add_option('--use-'+name, dest='use_'+name, default=False, action='store_true', help=desc)
+        gr.add_option('--use-'+name, dest='use_'+name, default=False,
+                      action='store_true', help=desc)
 
     def add_trans_option(name, desc):
-        gr.add_option('--use-'+name, dest='use_'+name, default=False, action='store_true', help=desc)
+        gr.add_option('--use-'+name, dest='use_'+name, default=False,
+                      action='store_true', help=desc)
 
     add_use_option('all',     'Attempt to enable every ZCM feature')
     add_use_option('java',    'Enable java features')
@@ -159,7 +161,7 @@ def attempt_use_cxxtest(ctx):
 
 def attempt_use_clang(ctx):
     ctx.load('clang-custom')
-    ctx.env.CLANG_VERSION = ctx.check_clang_version()
+    ctx.env.CLANG_VERSION = ctx.assert_clang_version(3.6)
     ctx.env.configuredEnv.append('asan')
     ctx.env.configuredEnv.append('tsan')
     return True
@@ -271,4 +273,5 @@ def build(ctx):
 
     ctx.add_group()
 
-    ctx.recurse('test')
+    if not ctx.variant in ['asan']:
+        ctx.recurse('test')
