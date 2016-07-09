@@ -5,9 +5,10 @@
 extern "C" {
 #endif
 
-#include <stdlib.h>
+#ifndef SWIG
 #include <stdio.h>
 #include <stdint.h>
+#endif
 
 typedef struct _zcm_eventlog_event_t zcm_eventlog_event_t;
 struct _zcm_eventlog_event_t

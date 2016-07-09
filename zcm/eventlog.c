@@ -2,6 +2,7 @@
 #include "zcm/util/ioutils.h"
 #include <assert.h>
 #include <string.h>
+#include <stdlib.h>
 
 #define MAGIC ((int32_t) 0xEDA1DA01L)
 

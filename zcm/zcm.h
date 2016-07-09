@@ -5,7 +5,9 @@
 extern "C" {
 #endif
 
+#ifndef SWIG
 #include <stdint.h>
+#endif
 
 #include <assert.h>
 #define ZCM_ASSERT(X) assert(X)

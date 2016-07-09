@@ -1,8 +1,10 @@
 #pragma once
 
+#ifndef SWIG
 #include <stdint.h>
 #include <string>
 #include <vector>
+#endif
 
 #include "zcm/zcm.h"
 
