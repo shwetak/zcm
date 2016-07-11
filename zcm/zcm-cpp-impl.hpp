@@ -203,7 +203,8 @@ class HandlerSubscription : public virtual Subscription
 };
 
 template <class Msg, class Handler>
-class TypedHandlerSubscription : public TypedSubscription<Msg>, HandlerSubscription<Handler>
+class TypedHandlerSubscription : public TypedSubscription<Msg>,
+                                 public HandlerSubscription<Handler>
 {
     friend class ZCM;
 
